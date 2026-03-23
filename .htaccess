@@ -1,0 +1,46 @@
+# =============================================================================
+# DX-Engine — Root Directory .htaccess
+# =============================================================================
+# Place this file at:  htdocs/dx-engine/.htaccess
+#
+# XAMPP prerequisite (do this once in httpd.conf):
+#   Find the block:  <Directory "C:/xampp/htdocs">
+#   Change:          AllowOverride None
+#   To:              AllowOverride All
+#   Then restart Apache from the XAMPP Control Panel.
+# =============================================================================
+
+# Block direct access to PHP source directories
+<FilesMatch "\.(php)$">
+    # Allow PHP files to be processed normally
+    # (DirectoryIndex rules below restrict what is browsable)
+</FilesMatch>
+
+# Deny directory listing everywhere
+Options -Indexes
+
+# Protect the config, src, and app folders from direct HTTP access.
+# Only /public/* should be reachable via a browser.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ------------------------------------------------------------------
+    # 1. Hard-block access to sensitive directories
+    # ------------------------------------------------------------------
+    RewriteRule ^(config|src|app|database|docs|examples)(/.*)?$ - [F,L]
+
+    # ------------------------------------------------------------------
+    # 2. If a real file/directory is requested, serve it directly
+    #    (handles CSS, JS, images under /public/)
+    # ------------------------------------------------------------------
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # ------------------------------------------------------------------
+    # 3. Everything else → public/index.php  (future front-controller)
+    # ------------------------------------------------------------------
+    # Uncomment the two lines below only if you add a front-controller
+    # at public/index.php that dispatches all routes.
+    # RewriteRule ^(.*)$ public/index.php [QSA,L]
+</IfModule>

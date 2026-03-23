@@ -1,0 +1,440 @@
+/**
+ * DX-Engine — Stylesheet  v1.0
+ * =======================================================================
+ * Design tokens → component skin → triage palette → animations
+ *
+ * Stacking order:
+ *   1. Bootstrap 5 (loaded by the host page)
+ *   2. This file (loaded after Bootstrap)
+ *   3. Host-page overrides (optional, use .dx-* selectors)
+ *
+ * Override any token in your own stylesheet:
+ *   :root { --dx-primary: #0d6efd; }
+ * =======================================================================
+ */
+
+/* ======================================================================
+ * 1. Design Tokens
+ * ==================================================================== */
+:root {
+  /* Brand */
+  --dx-primary:          #1d4ed8;
+  --dx-primary-hover:    #1e40af;
+  --dx-primary-light:    #dbeafe;
+  --dx-primary-rgb:      29, 78, 216;
+
+  /* Surface */
+  --dx-surface:          #ffffff;
+  --dx-surface-2:        #f8fafc;
+  --dx-border:           #e2e8f0;
+  --dx-border-focus:     #93c5fd;
+  --dx-radius:           0.625rem;       /* 10px */
+  --dx-radius-sm:        0.375rem;
+
+  /* Text */
+  --dx-text:             #1e293b;
+  --dx-text-secondary:   #64748b;
+  --dx-muted:            #94a3b8;
+
+  /* Feedback */
+  --dx-success:          #16a34a;
+  --dx-success-bg:       #dcfce7;
+  --dx-error:            #dc2626;
+  --dx-error-bg:         #fee2e2;
+  --dx-warning:          #d97706;
+  --dx-warning-bg:       #fef3c7;
+  --dx-info:             #0284c7;
+  --dx-info-bg:          #e0f2fe;
+
+  /* Shadows */
+  --dx-shadow-card:      0 1px 3px 0 rgba(0,0,0,.07), 0 1px 2px -1px rgba(0,0,0,.07);
+  --dx-shadow-focus:     0 0 0 3px rgba(var(--dx-primary-rgb), .25);
+
+  /* Typography */
+  --dx-font:             'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --dx-font-mono:        'JetBrains Mono', 'Fira Code', monospace;
+  --dx-font-size-base:   0.9375rem;      /* 15px */
+
+  /* Triage */
+  --dx-triage-1: #ef4444;
+  --dx-triage-2: #f97316;
+  --dx-triage-3: #eab308;
+  --dx-triage-4: #22c55e;
+  --dx-triage-5: #3b82f6;
+}
+
+/* ======================================================================
+ * 2. Base Reset within DX scope
+ * ==================================================================== */
+.dx-root,
+.dx-root * {
+  box-sizing: border-box;
+}
+
+.dx-root {
+  font-family: var(--dx-font);
+  font-size:   var(--dx-font-size-base);
+  color:       var(--dx-text);
+  line-height: 1.6;
+}
+
+/* ======================================================================
+ * 3. Card Shell
+ * ==================================================================== */
+.dx-root .dx-card {
+  border:        1px solid var(--dx-border);
+  border-radius: var(--dx-radius);
+  box-shadow:    var(--dx-shadow-card);
+  background:    var(--dx-surface);
+  overflow:      hidden;
+}
+
+.dx-root .dx-card-header {
+  background:    var(--dx-surface-2);
+  border-bottom: 1px solid var(--dx-border);
+  padding:       1.25rem 1.5rem;
+}
+
+.dx-root .dx-card-body {
+  padding: 1.5rem;
+}
+
+.dx-root .dx-card-footer {
+  background:    var(--dx-surface-2);
+  border-top:    1px solid var(--dx-border);
+  padding:       1rem 1.5rem;
+}
+
+.dx-root .dx-step-title {
+  font-size:   1.05rem;
+  color:       var(--dx-text);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ======================================================================
+ * 4. Stepper / Progress Bar
+ * ==================================================================== */
+.dx-root .dx-stepper {
+  /* already defined inline via JS — styles here for animation only */
+}
+
+.dx-root .dx-step-dot {
+  transition: background 0.3s ease;
+  border-radius: 2px;
+}
+
+/* ======================================================================
+ * 5. Form Fields
+ * ==================================================================== */
+.dx-root .dx-field-wrap {
+  margin-bottom: 0;   /* gutter handled by Bootstrap .g-3 */
+}
+
+.dx-root .form-label {
+  margin-bottom:  0.35rem;
+  color:          var(--dx-text);
+  font-weight:    500;
+  font-size:      0.8125rem;
+  letter-spacing: 0.01em;
+}
+
+.dx-root .form-control,
+.dx-root .form-select {
+  border-color:   var(--dx-border);
+  border-radius:  var(--dx-radius-sm);
+  font-size:      0.9375rem;
+  color:          var(--dx-text);
+  background:     var(--dx-surface);
+  transition:     border-color 0.15s ease, box-shadow 0.15s ease;
+  padding:        0.5rem 0.75rem;
+}
+
+.dx-root .form-control:focus,
+.dx-root .form-select:focus {
+  border-color: var(--dx-border-focus);
+  box-shadow:   var(--dx-shadow-focus);
+  outline:      none;
+}
+
+.dx-root .form-control::placeholder {
+  color:   var(--dx-muted);
+  opacity: 1;
+}
+
+.dx-root .form-control.is-invalid,
+.dx-root .form-select.is-invalid {
+  border-color:     var(--dx-error);
+  background-image: none;
+}
+
+.dx-root .invalid-feedback.dx-field-error {
+  color:      var(--dx-error);
+  font-size:  0.8125rem;
+  margin-top: 0.3rem;
+  display:    block;
+}
+
+.dx-root .form-text {
+  font-size: 0.75rem;
+  color:     var(--dx-text-secondary);
+}
+
+/* ======================================================================
+ * 6. Section Heading + Divider
+ * ==================================================================== */
+.dx-root .dx-section-heading {
+  font-size:     0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color:         var(--dx-text-secondary);
+  border-bottom: 2px solid var(--dx-primary-light);
+  padding-bottom: 0.35rem;
+  margin-top:    0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dx-root .dx-divider {
+  border-color: var(--dx-border);
+  opacity: 1;
+}
+
+/* ======================================================================
+ * 7. Buttons
+ * ==================================================================== */
+.dx-root .btn {
+  border-radius: var(--dx-radius-sm);
+  font-size:     0.875rem;
+  font-weight:   500;
+  padding:       0.5rem 1.25rem;
+  transition:    all 0.15s ease;
+  letter-spacing: 0.01em;
+}
+
+.dx-root .btn-primary {
+  background:    var(--dx-primary);
+  border-color:  var(--dx-primary);
+}
+
+.dx-root .btn-primary:hover:not(:disabled) {
+  background:   var(--dx-primary-hover);
+  border-color: var(--dx-primary-hover);
+}
+
+.dx-root .btn-primary:focus {
+  box-shadow: var(--dx-shadow-focus);
+}
+
+.dx-root .btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ======================================================================
+ * 8. Radio — Triage Palette
+ * ==================================================================== */
+.dx-root .dx-radio-item {
+  padding:       0.5rem 0.75rem;
+  border:        1px solid var(--dx-border);
+  border-radius: var(--dx-radius-sm);
+  transition:    border-color 0.15s, background 0.15s;
+  margin-bottom: 0.35rem !important;
+}
+
+.dx-root .dx-radio-item:has(.form-check-input:checked) {
+  border-color: var(--dx-primary);
+  background:   var(--dx-primary-light);
+}
+
+.dx-root .dx-radio-item.triage-1 .form-check-label::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--dx-triage-1);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.dx-root .dx-radio-item.triage-2 .form-check-label::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--dx-triage-2); margin-right:6px; vertical-align:middle; }
+.dx-root .dx-radio-item.triage-3 .form-check-label::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--dx-triage-3); margin-right:6px; vertical-align:middle; }
+.dx-root .dx-radio-item.triage-4 .form-check-label::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--dx-triage-4); margin-right:6px; vertical-align:middle; }
+.dx-root .dx-radio-item.triage-5 .form-check-label::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--dx-triage-5); margin-right:6px; vertical-align:middle; }
+
+/* ======================================================================
+ * 9. Loader
+ * ==================================================================== */
+.dx-root .dx-loader {
+  min-height: 220px;
+}
+
+.dx-root .spinner-border {
+  width:        2.25rem;
+  height:       2.25rem;
+  border-width: 0.225em;
+  color:        var(--dx-primary) !important;
+}
+
+/* ======================================================================
+ * 10. Completion Screen
+ * ==================================================================== */
+.dx-root .dx-success-icon {
+  display: flex;
+  justify-content: center;
+}
+
+.dx-root .dx-success-icon circle {
+  fill: var(--dx-success-bg);
+}
+
+.dx-root .dx-success-icon path {
+  stroke: var(--dx-success);
+}
+
+/* ======================================================================
+ * 11. Alert overrides inside DX scope
+ * ==================================================================== */
+.dx-root .alert {
+  border-radius: var(--dx-radius-sm);
+  font-size:     0.875rem;
+}
+
+.dx-root .alert-danger  { background: var(--dx-error-bg);   border-color: #fca5a5; color: var(--dx-error); }
+.dx-root .alert-warning { background: var(--dx-warning-bg); border-color: #fcd34d; color: var(--dx-warning); }
+.dx-root .alert-success { background: var(--dx-success-bg); border-color: #86efac; color: var(--dx-success); }
+.dx-root .alert-info    { background: var(--dx-info-bg);    border-color: #7dd3fc; color: var(--dx-info); }
+
+/* ======================================================================
+ * 12. Responsive tweaks
+ * ==================================================================== */
+@media (max-width: 576px) {
+  .dx-root .dx-card-body  { padding: 1rem; }
+  .dx-root .dx-card-header,
+  .dx-root .dx-card-footer { padding: 0.875rem 1rem; }
+
+  .dx-root .btn { width: 100%; }
+  .dx-root .dx-card-footer .d-flex { flex-direction: column-reverse; gap: 0.5rem !important; }
+}
+
+/* ======================================================================
+ * 13. Named Stepper (dx-interpreter.js Stepper component)
+ *
+ * Renders:
+ *   [1]————[2]————[3]
+ *   Step 1  Step 2  Step 3
+ *
+ * States: default (upcoming), --active (current), --done (past)
+ * ==================================================================== */
+.dx-root .dx-stepper {
+  margin-bottom: 1.25rem;
+}
+
+.dx-root .dx-stepper-list {
+  display:         flex;
+  align-items:     center;
+  list-style:      none;
+  padding:         0;
+  margin:          0;
+  gap:             0;           /* items manage their own spacing */
+}
+
+.dx-root .dx-stepper-item {
+  display:         flex;
+  align-items:     center;
+  flex:            1;
+  min-width:       0;           /* allow text truncation */
+  position:        relative;
+}
+
+/* Last item has no trailing connector */
+.dx-root .dx-stepper-item:last-child {
+  flex: 0 0 auto;
+}
+
+/* ── Badge (circle with number or checkmark) ── */
+.dx-root .dx-stepper-badge {
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  flex-shrink:      0;
+  width:            28px;
+  height:           28px;
+  border-radius:    50%;
+  font-size:        0.75rem;
+  font-weight:      600;
+  line-height:      1;
+  border:           2px solid var(--dx-muted);
+  background:       var(--dx-surface);
+  color:            var(--dx-muted);
+  transition:       border-color 0.2s, background 0.2s, color 0.2s;
+  z-index:          1;
+}
+
+.dx-root .dx-stepper-item--active .dx-stepper-badge {
+  border-color: var(--dx-primary);
+  background:   var(--dx-primary);
+  color:        #fff;
+}
+
+.dx-root .dx-stepper-item--done .dx-stepper-badge {
+  border-color: var(--dx-success);
+  background:   var(--dx-success);
+  color:        #fff;
+}
+
+/* ── Label ── */
+.dx-root .dx-stepper-label {
+  font-size:     0.75rem;
+  font-weight:   500;
+  color:         var(--dx-muted);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  margin-left:   0.5rem;
+  transition:    color 0.2s;
+}
+
+.dx-root .dx-stepper-item--active .dx-stepper-label {
+  color:       var(--dx-text);
+  font-weight: 600;
+}
+
+.dx-root .dx-stepper-item--done .dx-stepper-label {
+  color: var(--dx-text-secondary);
+}
+
+/* ── Connector line between items ── */
+.dx-root .dx-stepper-connector {
+  display:    block;
+  flex:       1;
+  height:     2px;
+  background: var(--dx-border);
+  margin:     0 0.4rem;
+  border-radius: 1px;
+  transition: background 0.25s;
+}
+
+.dx-root .dx-stepper-item--done .dx-stepper-connector {
+  background: var(--dx-success);
+}
+
+/* ── Responsive: hide labels on small screens ── */
+@media (max-width: 480px) {
+  .dx-root .dx-stepper-label {
+    display: none;
+  }
+  .dx-root .dx-stepper-connector {
+    margin: 0 0.25rem;
+  }
+}
+
+/* ======================================================================
+ * 14. Animations
+ * ==================================================================== */
+@keyframes dx-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dx-root .dx-card {
+  animation: dx-fade-in 0.22s ease both;
+}

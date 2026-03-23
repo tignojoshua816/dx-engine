@@ -1,0 +1,49 @@
+# =============================================================================
+# DX-Engine — /public Directory .htaccess
+# =============================================================================
+# Place this file at:  htdocs/dx-engine/public/.htaccess
+#
+# This file ensures:
+#   • PHP is processed (not downloaded) for .php files
+#   • The api/dx.php endpoint is accessible via GET and POST
+#   • Trailing-slash and case issues are normalised
+#   • CORS preflight (OPTIONS) is handled without entering PHP
+# =============================================================================
+
+Options -Indexes
+
+# ---------------------------------------------------------------------------
+# CORS — allow all origins in development.
+# In production, replace * with your actual domain(s).
+# ---------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin  "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, X-Requested-With, Accept"
+</IfModule>
+
+# Answer OPTIONS (preflight) immediately — no PHP needed
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^ - [R=204,L]
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Ensure PHP files are executed, not downloaded.
+# (Normally correct on XAMPP; belt-and-suspenders for edge cases.)
+# ---------------------------------------------------------------------------
+<IfModule mod_php.c>
+    <FilesMatch "\.php$">
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Cache-Control for static assets
+# ---------------------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css              "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
