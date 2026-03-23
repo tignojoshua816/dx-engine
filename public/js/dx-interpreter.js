@@ -769,10 +769,19 @@ class DXInterpreter {
   _collectForm(form) {
     const values = {};
     for (const inp of form.querySelectorAll('[name]')) {
-      const name = inp.getAttribute('name');
-      if (!name) continue;
+      const rawName = inp.getAttribute('name');
+      if (!rawName) continue;
+
+      const isArray = rawName.endsWith('[]');
+      const name    = isArray ? rawName.slice(0, -2) : rawName;
+
       if (inp.type === 'checkbox') {
-        values[name] = inp.checked ? inp.value : '';
+        if (isArray) {
+          if (!values[name]) values[name] = [];
+          if (inp.checked) values[name].push(inp.value);
+        } else {
+          values[name] = inp.checked ? inp.value : '';
+        }
       } else if (inp.type === 'radio') {
         if (inp.checked) values[name] = inp.value;
       } else {
@@ -1034,14 +1043,24 @@ class DXInterpreter {
   _attachVisibilityListeners(form) {
     const update = e => {
       if (!e.target?.name) return;
-      const name = e.target.name;
+
+      const rawName = e.target.name;
+      const isArray = rawName.endsWith('[]');
+      const name    = isArray ? rawName.slice(0, -2) : rawName;
+
       if (e.target.type === 'checkbox') {
-        this._state[name] = e.target.checked ? e.target.value : '';
+        if (isArray) {
+          this._state[name] = [...form.querySelectorAll(`[name="${rawName}"]:checked`)]
+            .map(el => el.value);
+        } else {
+          this._state[name] = e.target.checked ? e.target.value : '';
+        }
       } else if (e.target.type === 'radio') {
         if (e.target.checked) this._state[name] = e.target.value;
       } else {
         this._state[name] = e.target.value;
       }
+
       VisibilityEngine.applyAll(this._target, this._state);
     };
 
