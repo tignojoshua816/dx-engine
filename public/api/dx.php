@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * DX-Engine — API Entry Point
  * =============================================================================
@@ -25,8 +26,6 @@
  * NEVER leave $forceDebug = true in production.
  * =============================================================================
  */
-
-declare(strict_types=1);
 
 // ── 0. Debug switch ───────────────────────────────────────────────────────────
 $forceDebug = false;   // keep production-safe default; app config/env can enable debug
