@@ -124,7 +124,7 @@ $editId      = (int) ($_GET['edit'] ?? 0);
    *   https://my-server.com/ → https://my-server.com/public/api/dx.php
    */
   const admission = new DXInterpreter('#dx-root', {
-    dx_id   : 'admission_case',
+    dx_id   : 'admission',
     endpoint: '<?= $apiEndpoint ?>',
 
     <?php if ($editId > 0): ?>
@@ -139,7 +139,7 @@ $editId      = (int) ($_GET['edit'] ?? 0);
       // `data` contains { admission_id } from the final postProcess response.
       console.log('Admission registered:', data);
       // Redirect example:
-      // window.location.href = '<?= htmlspecialchars($config['url'], ENT_QUOTES, 'UTF-8') ?>/admissions/view?id=' + data.admission_id;
+       //window.location.href = '<?= htmlspecialchars($config['url'], ENT_QUOTES, 'UTF-8') ?>?admission_id=' + data.admission_id;
     },
 
     successTitle: 'Admission Complete',

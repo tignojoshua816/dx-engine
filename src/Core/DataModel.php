@@ -26,7 +26,6 @@
 namespace DXEngine\Core;
 
 use PDO;
-use PDOException;
 
 abstract class DataModel
 {
@@ -215,12 +214,15 @@ abstract class DataModel
     /** Find rows matching $conditions (key=>value AND). */
     public function where(array $conditions = [], string $orderBy = '', int $limit = 0): array
     {
-        $params = [];
+        $params  = [];
         $clauses = [];
 
         foreach ($conditions as $column => $value) {
-            $placeholder    = ':w_' . $column;
-            $clauses[]      = "{$column} = {$placeholder}";
+            $safeColumn = $this->sanitizeIdentifier((string) $column);
+            $token      = preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $column);
+            $placeholder = ':w_' . $token;
+
+            $clauses[] = "{$safeColumn} = {$placeholder}";
             $params[$placeholder] = $value;
         }
 
@@ -229,10 +231,10 @@ abstract class DataModel
             $sql .= ' WHERE ' . implode(' AND ', $clauses);
         }
         if ($orderBy) {
-            $sql .= " ORDER BY {$orderBy}";
+            $sql .= ' ORDER BY ' . $this->sanitizeOrderBy($orderBy);
         }
         if ($limit > 0) {
-            $sql .= " LIMIT {$limit}";
+            $sql .= ' LIMIT ' . (int) $limit;
         }
 
         $stmt = $this->pdo()->prepare($sql);
@@ -390,5 +392,36 @@ abstract class DataModel
             ];
         }
         return $out;
+    }
+
+    /**
+     * Restrict identifiers used in dynamic SQL fragments.
+     * Allows: letters, numbers, underscore.
+     */
+    protected function sanitizeIdentifier(string $identifier): string
+    {
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $identifier)) {
+            throw new \InvalidArgumentException("Invalid SQL identifier: {$identifier}");
+        }
+        return $identifier;
+    }
+
+    /**
+     * Restrict ORDER BY fragment to "column" or "column ASC|DESC".
+     */
+    protected function sanitizeOrderBy(string $orderBy): string
+    {
+        $orderBy = trim($orderBy);
+        if ($orderBy === '') {
+            return $orderBy;
+        }
+
+        if (!preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)(\s+(ASC|DESC))?$/i', $orderBy, $m)) {
+            throw new \InvalidArgumentException("Invalid ORDER BY clause: {$orderBy}");
+        }
+
+        $column = $this->sanitizeIdentifier($m[1]);
+        $dir    = isset($m[3]) ? strtoupper($m[3]) : '';
+        return $dir ? "{$column} {$dir}" : $column;
     }
 }

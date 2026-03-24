@@ -31,16 +31,23 @@ class Router
         // CORS (adjust origins in production)
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+        header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, X-CSRF-Token');
 
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             http_response_code(204);
             exit;
         }
 
+        if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $dxId)) {
+            http_response_code(400);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(['status' => 'error', 'message' => 'Invalid DX identifier.']);
+            exit;
+        }
+
         if (!isset($this->registry[$dxId])) {
             http_response_code(404);
-            header('Content-Type: application/json');
+            header('Content-Type: application/json; charset=UTF-8');
             echo json_encode(['status' => 'error', 'message' => "Unknown DX: {$dxId}"]);
             exit;
         }
@@ -48,12 +55,24 @@ class Router
         $class      = $this->registry[$dxId];
         $controller = new $class();
 
-        // Merge GET + POST; decode JSON body if Content-Type is application/json
+        // Merge GET + POST, then optionally decode JSON body for application/json requests only.
         $params = array_merge($_GET, $_POST);
-        $raw    = file_get_contents('php://input');
-        if ($raw) {
-            $decoded = json_decode($raw, true);
-            if (is_array($decoded)) {
+
+        $contentType = strtolower(trim((string) ($_SERVER['CONTENT_TYPE'] ?? '')));
+        if (str_contains($contentType, ';')) {
+            $contentType = trim((string) explode(';', $contentType, 2)[0]);
+        }
+
+        if ($contentType === 'application/json') {
+            $raw = file_get_contents('php://input');
+            if ($raw !== false && trim($raw) !== '') {
+                $decoded = json_decode($raw, true);
+                if (!is_array($decoded)) {
+                    http_response_code(400);
+                    header('Content-Type: application/json; charset=UTF-8');
+                    echo json_encode(['status' => 'error', 'message' => 'Malformed JSON request body.']);
+                    exit;
+                }
                 $params = array_merge($params, $decoded);
             }
         }

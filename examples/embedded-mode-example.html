@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DX Interpreter - Embedded Mode Example</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../public/css/dx-engine.css">
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .legacy-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 1.5rem 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .legacy-sidebar {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+    .legacy-content {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      min-height: 500px;
+    }
+    .nav-item {
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-item:hover {
+      background: #f1f5f9;
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      font-weight: 600;
+    }
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid #e2e8f0;
+    }
+    .action-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      transition: all 0.3s;
+    }
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+    #dx-embedded-container {
+      margin-top: 2rem;
+    }
+    .info-box {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 4px solid #3b82f6;
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .info-box h6 {
+      color: #1e40af;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .info-box p {
+      color: #1e3a8a;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Legacy System Header -->
+<div class="legacy-header">
+  <div class="container">
+    <h3 class="mb-0">🏢 Legacy Portal System</h3>
+    <p class="mb-0 opacity-75">Integrated with DX-Engine Workflow</p>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <div class="row">
+    <!-- Sidebar Navigation -->
+    <div class="col-md-3">
+      <div class="legacy-sidebar">
+        <h6 class="fw-bold mb-3">Navigation</h6>
+        <div class="nav-item active" data-page="dashboard">
+          📊 Dashboard
+        </div>
+        <div class="nav-item" data-page="applications">
+          📝 Applications
+        </div>
+        <div class="nav-item" data-page="reports">
+          📈 Reports
+        </div>
+        <div class="nav-item" data-page="settings">
+          ⚙️ Settings
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-md-9">
+      <div class="legacy-content">
+        <!-- Dashboard Page -->
+        <div id="page-dashboard" class="page-content">
+          <h2 class="page-title">Dashboard</h2>
+          
+          <div class="info-box">
+            <h6>📌 DX Interpreter - Embedded Mode</h6>
+            <p>This example demonstrates how to integrate DX-Engine workflows into existing legacy systems using embedded mode. Click "Start New Application" to see the form render inline.</p>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h3 class="text-primary mb-0">24</h3>
+                  <p class="text-muted mb-0">Pending Applications</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h3 class="text-success mb-0">156</h3>
+                  <p class="text-muted mb-0">Approved</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h3 class="text-warning mb-0">8</h3>
+                  <p class="text-muted mb-0">Under Review</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button id="startEmbeddedBtn" class="action-btn">
+            ➕ Start New Application
+          </button>
+
+          <!-- DX Interpreter Embedded Container -->
+          <div id="dx-embedded-container" class="dx-root" style="display:none;"></div>
+        </div>
+
+        <!-- Applications Page -->
+        <div id="page-applications" class="page-content" style="display:none;">
+          <h2 class="page-title">Applications</h2>
+          <p class="text-muted">List of all applications would appear here...</p>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="page-reports" class="page-content" style="display:none;">
+          <h2 class="page-title">Reports</h2>
+          <p class="text-muted">Analytics and reports would appear here...</p>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="page-settings" class="page-content" style="display:none;">
+          <h2 class="page-title">Settings</h2>
+          <p class="text-muted">System settings would appear here...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../public/js/dx-interpreter.js"></script>
+<script>
+(function(){
+  // Navigation handling
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const page = this.dataset.page;
+      
+      // Update active state
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Show selected page
+      document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+      document.getElementById('page-' + page).style.display = 'block';
+    });
+  });
+
+  // DX Interpreter Embedded Mode
+  const startBtn = document.getElementById('startEmbeddedBtn');
+  const container = document.getElementById('dx-embedded-container');
+  let dxInterpreter = null;
+
+  startBtn.addEventListener('click', function() {
+    // Hide button, show container
+    startBtn.style.display = 'none';
+    container.style.display = 'block';
+
+    // Initialize DX Interpreter in EMBEDDED mode (default)
+    dxInterpreter = new DXInterpreter('#dx-embedded-container', {
+      dx_id: 'admission_case',
+      endpoint: '../public/api/dx.php',
+      renderMode: 'embedded', // Explicit embedded mode
+      onStepComplete: function(stepData) {
+        console.log('Step completed:', stepData);
+        
+        // You can add custom logic here
+        // For example, save to legacy database, trigger notifications, etc.
+        
+        // Example: Show toast notification
+        showToast('Step ' + stepData.stepIndex + ' completed successfully!');
+      },
+      onComplete: function(data) {
+        console.log('Form completed:', data);
+        
+        // Show success message
+        container.innerHTML = `
+          <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">✅ Application Submitted Successfully!</h4>
+            <p>Your application has been submitted and is now under review.</p>
+            <hr>
+            <p class="mb-0">Reference: <strong>${data.case_ref || 'N/A'}</strong></p>
+          </div>
+          <button class="btn btn-primary" onclick="location.reload()">Start Another Application</button>
+        `;
+      }
+    });
+
+    dxInterpreter.load();
+  });
+
+  // Simple toast notification
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'position-fixed top-0 end-0 p-3';
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+      <div class="toast show" role="alert">
+        <div class="toast-header">
+          <strong class="me-auto">Notification</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.remove(), 3000);
+  }
+})();
+</script>
+
+</body>
+</html>

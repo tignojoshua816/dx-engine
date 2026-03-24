@@ -30,6 +30,15 @@ declare(strict_types=1);
 // ── 0. Debug switch ───────────────────────────────────────────────────────────
 $forceDebug = false;   // keep production-safe default; app config/env can enable debug
 
+// ── 0b. Common JSON response headers (security + consistency) ────────────────
+if (!headers_sent()) {
+    header('Content-Type: application/json; charset=UTF-8');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: no-referrer');
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+}
+
 // ── 1. Fatal-error capture (runs BEFORE the try-catch can fire) ───────────────
 //
 // Catches: parse errors, class-not-found fatals, PHP-version mismatches.
@@ -131,7 +140,11 @@ try {
     // ── 4b. Session ───────────────────────────────────────────────────────────
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_name('DXSID');
-        session_start();
+        session_start([
+            'cookie_httponly' => true,
+            'cookie_samesite' => 'Lax',
+            'use_strict_mode' => 1,
+        ]);
     }
 
     // ── 4c. App config ────────────────────────────────────────────────────────
@@ -159,7 +172,28 @@ try {
     $pdo = require $dbFile;
     \DXEngine\Core\DataModel::boot($pdo);
 
-    // ── 4e. Router — register DX controllers ─────────────────────────────────
+    // ── 4e. Basic request hardening ──────────────────────────────────────────
+    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    if (!in_array($method, ['GET', 'POST'], true)) {
+        http_response_code(405);
+        echo json_encode([
+            'status'  => 'error',
+            'message' => 'Method not allowed.',
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        exit;
+    }
+
+    $dx = trim((string)($_GET['dx'] ?? ''));
+    if ($dx === '') {
+        http_response_code(400);
+        echo json_encode([
+            'status'  => 'error',
+            'message' => 'Missing required "dx" parameter.',
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        exit;
+    }
+
+    // ── 4f. Router — register DX controllers ─────────────────────────────────
     //
     // KEY   = the ?dx= query-string value used in the URL
     // VALUE = the fully-qualified DXController subclass
@@ -172,17 +206,17 @@ try {
     // Canonical route used by the JS interpreter and new integrations.
     $router->register('admission',      \DXEngine\App\DX\AdmissionDX::class);
 
-    // Legacy alias — maps ?dx=admission_case to the same controller.
-    // Eliminates the "Unknown DX: admission_case" 404 reported by check_env.php.
-    // Any external caller, bookmark, or curl test using the old query-string
-    // value will continue to work without modification.
-    $router->register('admission_case', \DXEngine\App\DX\AdmissionDX::class);
+    // Educational admission case workflow (multi-step with credential generation)
+    $router->register('admission_case', \DXEngine\App\DX\AdmissionCaseDX::class);
+    
+    $router->register('enrollment', \DXEngine\App\DX\EnrollmentDX::class);
+    $router->register('enrollment_case', \DXEngine\App\DX\EnrollmentDX::class);
 
     // Add more Digital Experiences here:
     // $router->register('discharge',   \DXEngine\App\DX\DischargeDX::class);
     // $router->register('lab_request', \DXEngine\App\DX\LabRequestDX::class);
 
-    $router->dispatch($_GET['dx'] ?? '');
+    $router->dispatch($dx);
 
 } catch (\Throwable $e) {
 

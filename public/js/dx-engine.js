@@ -182,6 +182,8 @@
     this.stepIndex  = 0;          // current step index
     this.formState  = {};          // accumulated field values across all steps
     this.registry   = ComponentRegistry;
+    this._activeController = null; // AbortController for in-flight fetches
+    this._lastVisibilitySignature = ''; // prevent redundant visibility DOM writes
   }
 
   DXEngineInstance.prototype = {
@@ -201,21 +203,30 @@
 
       self._showLoader();
 
+      if (self._activeController) self._activeController.abort();
+      self._activeController = new AbortController();
+
       fetch(endpoint, {
         method : 'GET',
-        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        signal : self._activeController.signal
       })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
       })
       .then(function (json) {
+        if (!json || typeof json !== 'object' || !Array.isArray(json.steps)) {
+          throw new Error('Malformed DX metadata payload.');
+        }
         self.flow       = json;
         self.formState  = Object.assign({}, json.initial_state || {});
         self.stepIndex  = 0;
+        self._lastVisibilitySignature = '';
         self._renderStep();
       })
       .catch(function (err) {
+        if (err && err.name === 'AbortError') return;
         self._showError('Failed to load the form. ' + err.message);
       });
     },
@@ -398,16 +409,30 @@
 
       self._setLoading(submitBtn, true);
 
-      fetch(self.flow.post_endpoint, {
+      var postEndpoint = self._resolvePostEndpoint();
+      if (!postEndpoint) {
+        self._setLoading(submitBtn, false);
+        self._showFormAlert(form, 'No submission endpoint configured.', 'danger');
+        return;
+      }
+
+      if (self._activeController) self._activeController.abort();
+      self._activeController = new AbortController();
+
+      fetch(postEndpoint, {
         method : 'POST',
         headers: {
           'Content-Type'    : 'application/json',
           'Accept'          : 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: self._activeController.signal
       })
-      .then(function (res) { return res.json(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
       .then(function (response) {
         self._setLoading(submitBtn, false);
 
@@ -445,9 +470,19 @@
         }
       })
       .catch(function (err) {
+        if (err && err.name === 'AbortError') return;
         self._setLoading(submitBtn, false);
         self._showFormAlert(form, 'Network error: ' + err.message, 'danger');
       });
+    },
+
+    _resolvePostEndpoint: function () {
+      var pe = this.flow && this.flow.post_endpoint;
+      if (!pe) return this.options.endpoint || '/dx-engine/public/api/dx.php';
+      if (/^https?:\/\//i.test(pe) || pe.charAt(0) === '/') return pe;
+      var base = (this.options.endpoint || '/dx-engine/public/api/dx.php');
+      var idx = base.lastIndexOf('/');
+      return idx > -1 ? base.slice(0, idx + 1) + pe : pe;
     },
 
     /* ── Navigate back ────────────────────────────────────────────── */
@@ -558,7 +593,14 @@
     },
 
     _showError: function (message) {
-      this.targetEl.innerHTML = '<div class="alert alert-danger m-3"><strong>Error:</strong> ' + message + '</div>';
+      this.targetEl.innerHTML = '';
+      var wrap = _el('div', 'alert alert-danger m-3');
+      wrap.setAttribute('role', 'alert');
+      var strong = document.createElement('strong');
+      strong.textContent = 'Error: ';
+      wrap.appendChild(strong);
+      wrap.appendChild(document.createTextNode(String(message || 'Unknown error')));
+      this.targetEl.appendChild(wrap);
     },
 
     _scrollToTop: function () {
@@ -573,15 +615,22 @@
           self.formState[e.target.name] = e.target.type === 'checkbox'
             ? (e.target.checked ? e.target.value : '')
             : e.target.value;
-          VisibilityEngine.applyAll(self.targetEl, self.formState);
+          self._applyVisibilityIfChanged();
         }
       });
       form.addEventListener('input', function (e) {
         if (e.target && e.target.name) {
           self.formState[e.target.name] = e.target.value;
-          VisibilityEngine.applyAll(self.targetEl, self.formState);
+          self._applyVisibilityIfChanged();
         }
       });
+    },
+
+    _applyVisibilityIfChanged: function () {
+      var sig = JSON.stringify(this.formState || {});
+      if (sig === this._lastVisibilitySignature) return;
+      this._lastVisibilitySignature = sig;
+      VisibilityEngine.applyAll(this.targetEl, this.formState);
     }
   };
 

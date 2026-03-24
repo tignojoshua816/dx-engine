@@ -82,34 +82,58 @@
  * 3. Card Shell
  * ==================================================================== */
 .dx-root .dx-card {
-  border:        1px solid var(--dx-border);
+  border:        none;
   border-radius: var(--dx-radius);
-  box-shadow:    var(--dx-shadow-card);
+  box-shadow:    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   background:    var(--dx-surface);
   overflow:      hidden;
+  position:      relative;
+}
+
+.dx-root .dx-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--dx-primary) 0%, var(--dx-primary-hover) 100%);
 }
 
 .dx-root .dx-card-header {
-  background:    var(--dx-surface-2);
-  border-bottom: 1px solid var(--dx-border);
-  padding:       1.25rem 1.5rem;
+  background:    linear-gradient(180deg, var(--dx-surface) 0%, var(--dx-surface-2) 100%);
+  border-bottom: 2px solid var(--dx-border);
+  padding:       1.5rem 2rem;
 }
 
 .dx-root .dx-card-body {
-  padding: 1.5rem;
+  padding: 2rem;
+  background: var(--dx-surface);
 }
 
 .dx-root .dx-card-footer {
   background:    var(--dx-surface-2);
-  border-top:    1px solid var(--dx-border);
-  padding:       1rem 1.5rem;
+  border-top:    2px solid var(--dx-border);
+  padding:       1.25rem 2rem;
 }
 
 .dx-root .dx-step-title {
-  font-size:   1.05rem;
-  color:       var(--dx-text);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size:      1.25rem;
+  color:          var(--dx-text);
+  font-weight:    700;
+  letter-spacing: -0.02em;
+  margin-bottom:  0;
+  display:        flex;
+  align-items:    center;
+  gap:            0.5rem;
+}
+
+.dx-root .dx-step-title::before {
+  content: '';
+  width: 4px;
+  height: 1.5rem;
+  background: linear-gradient(180deg, var(--dx-primary) 0%, var(--dx-primary-hover) 100%);
+  border-radius: 2px;
 }
 
 /* ======================================================================
@@ -129,55 +153,124 @@
  * ==================================================================== */
 .dx-root .dx-field-wrap {
   margin-bottom: 0;   /* gutter handled by Bootstrap .g-3 */
+  position: relative;
 }
 
 .dx-root .form-label {
-  margin-bottom:  0.35rem;
+  margin-bottom:  0.5rem;
   color:          var(--dx-text);
-  font-weight:    500;
-  font-size:      0.8125rem;
+  font-weight:    600;
+  font-size:      0.875rem;
   letter-spacing: 0.01em;
+  display:        flex;
+  align-items:    center;
+  gap:            0.25rem;
+}
+
+.dx-root .form-label .text-danger {
+  color: var(--dx-error);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .dx-root .form-control,
 .dx-root .form-select {
-  border-color:   var(--dx-border);
+  border:         2px solid var(--dx-border);
   border-radius:  var(--dx-radius-sm);
   font-size:      0.9375rem;
   color:          var(--dx-text);
   background:     var(--dx-surface);
-  transition:     border-color 0.15s ease, box-shadow 0.15s ease;
-  padding:        0.5rem 0.75rem;
+  transition:     all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding:        0.625rem 0.875rem;
+  box-shadow:     0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dx-root .form-control:hover:not(:focus):not(:disabled),
+.dx-root .form-select:hover:not(:focus):not(:disabled) {
+  border-color: #cbd5e1;
+  box-shadow:   0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .dx-root .form-control:focus,
 .dx-root .form-select:focus {
-  border-color: var(--dx-border-focus);
-  box-shadow:   var(--dx-shadow-focus);
+  border-color: var(--dx-primary);
+  box-shadow:   var(--dx-shadow-focus), 0 4px 6px rgba(0, 0, 0, 0.07);
   outline:      none;
+  transform:    translateY(-1px);
 }
 
 .dx-root .form-control::placeholder {
   color:   var(--dx-muted);
-  opacity: 1;
+  opacity: 0.7;
+}
+
+.dx-root .form-control:disabled,
+.dx-root .form-select:disabled {
+  background:   var(--dx-surface-2);
+  border-color: var(--dx-border);
+  opacity:      0.6;
+  cursor:       not-allowed;
 }
 
 .dx-root .form-control.is-invalid,
 .dx-root .form-select.is-invalid {
   border-color:     var(--dx-error);
   background-image: none;
+  box-shadow:       0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .dx-root .invalid-feedback.dx-field-error {
-  color:      var(--dx-error);
-  font-size:  0.8125rem;
-  margin-top: 0.3rem;
-  display:    block;
+  color:       var(--dx-error);
+  font-size:   0.8125rem;
+  margin-top:  0.4rem;
+  display:     flex;
+  align-items: center;
+  gap:         0.35rem;
+  font-weight: 500;
+}
+
+.dx-root .invalid-feedback.dx-field-error::before {
+  content: '⚠';
+  font-size: 0.875rem;
 }
 
 .dx-root .form-text {
+  font-size:   0.8125rem;
+  color:       var(--dx-text-secondary);
+  margin-top:  0.35rem;
+  display:     flex;
+  align-items: center;
+  gap:         0.25rem;
+}
+
+.dx-root .form-text::before {
+  content: 'ℹ';
   font-size: 0.75rem;
-  color:     var(--dx-text-secondary);
+  opacity: 0.7;
+}
+
+/* Floating label effect (optional enhancement) */
+.dx-root .dx-field-wrap.floating-label {
+  position: relative;
+}
+
+.dx-root .dx-field-wrap.floating-label .form-label {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.875rem;
+  background: var(--dx-surface);
+  padding: 0 0.25rem;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dx-root .dx-field-wrap.floating-label .form-control:focus ~ .form-label,
+.dx-root .dx-field-wrap.floating-label .form-control:not(:placeholder-shown) ~ .form-label {
+  top: -0.5rem;
+  left: 0.625rem;
+  font-size: 0.75rem;
+  color: var(--dx-primary);
 }
 
 /* ======================================================================
@@ -203,31 +296,94 @@
  * 7. Buttons
  * ==================================================================== */
 .dx-root .btn {
-  border-radius: var(--dx-radius-sm);
-  font-size:     0.875rem;
-  font-weight:   500;
-  padding:       0.5rem 1.25rem;
-  transition:    all 0.15s ease;
+  border-radius:  var(--dx-radius-sm);
+  font-size:      0.9375rem;
+  font-weight:    600;
+  padding:        0.625rem 1.5rem;
+  transition:     all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: 0.01em;
+  border-width:   2px;
+  position:       relative;
+  overflow:       hidden;
+  box-shadow:     0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dx-root .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.dx-root .btn:active::before {
+  width: 300px;
+  height: 300px;
 }
 
 .dx-root .btn-primary {
-  background:    var(--dx-primary);
+  background:    linear-gradient(135deg, var(--dx-primary) 0%, var(--dx-primary-hover) 100%);
   border-color:  var(--dx-primary);
+  color:         #fff;
 }
 
 .dx-root .btn-primary:hover:not(:disabled) {
-  background:   var(--dx-primary-hover);
+  background:   linear-gradient(135deg, var(--dx-primary-hover) 0%, #1e3a8a 100%);
   border-color: var(--dx-primary-hover);
+  transform:    translateY(-2px);
+  box-shadow:   0 4px 12px rgba(var(--dx-primary-rgb), 0.4);
+}
+
+.dx-root .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(var(--dx-primary-rgb), 0.3);
 }
 
 .dx-root .btn-primary:focus {
-  box-shadow: var(--dx-shadow-focus);
+  box-shadow: var(--dx-shadow-focus), 0 4px 12px rgba(var(--dx-primary-rgb), 0.3);
+}
+
+.dx-root .btn-outline-secondary {
+  border-color: var(--dx-border);
+  color: var(--dx-text-secondary);
+  background: transparent;
+}
+
+.dx-root .btn-outline-secondary:hover:not(:disabled) {
+  background: var(--dx-surface-2);
+  border-color: var(--dx-text-secondary);
+  color: var(--dx-text);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .dx-root .btn:disabled {
-  opacity: 0.65;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.dx-root .btn .spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+  margin-right: 0.5rem;
+}
+
+/* Button loading state */
+.dx-root .btn.loading {
+  pointer-events: none;
+  position: relative;
+}
+
+.dx-root .btn.loading .dx-btn-label {
+  opacity: 0.6;
 }
 
 /* ======================================================================
@@ -318,14 +474,15 @@
 /* ======================================================================
  * 13. Named Stepper (dx-interpreter.js Stepper component)
  *
- * Renders:
- *   [1]————[2]————[3]
- *   Step 1  Step 2  Step 3
- *
+ * Modern, visually appealing stepper with animations and gradients
  * States: default (upcoming), --active (current), --done (past)
  * ==================================================================== */
 .dx-root .dx-stepper {
-  margin-bottom: 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: var(--dx-radius);
+  border: 1px solid var(--dx-border);
 }
 
 .dx-root .dx-stepper-list {
@@ -334,15 +491,18 @@
   list-style:      none;
   padding:         0;
   margin:          0;
-  gap:             0;           /* items manage their own spacing */
+  gap:             0;
+  position:        relative;
 }
 
 .dx-root .dx-stepper-item {
   display:         flex;
+  flex-direction:  column;
   align-items:     center;
   flex:            1;
-  min-width:       0;           /* allow text truncation */
+  min-width:       0;
   position:        relative;
+  z-index:         1;
 }
 
 /* Last item has no trailing connector */
@@ -356,74 +516,163 @@
   align-items:      center;
   justify-content:  center;
   flex-shrink:      0;
-  width:            28px;
-  height:           28px;
+  width:            48px;
+  height:           48px;
   border-radius:    50%;
-  font-size:        0.75rem;
-  font-weight:      600;
+  font-size:        1rem;
+  font-weight:      700;
   line-height:      1;
-  border:           2px solid var(--dx-muted);
+  border:           3px solid var(--dx-border);
   background:       var(--dx-surface);
   color:            var(--dx-muted);
-  transition:       border-color 0.2s, background 0.2s, color 0.2s;
-  z-index:          1;
+  transition:       all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:       0 2px 8px rgba(0, 0, 0, 0.08);
+  position:         relative;
+}
+
+.dx-root .dx-stepper-badge::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.3s ease;
 }
 
 .dx-root .dx-stepper-item--active .dx-stepper-badge {
   border-color: var(--dx-primary);
-  background:   var(--dx-primary);
+  background:   linear-gradient(135deg, var(--dx-primary) 0%, var(--dx-primary-hover) 100%);
   color:        #fff;
+  transform:    scale(1.1);
+  box-shadow:   0 4px 16px rgba(var(--dx-primary-rgb), 0.4);
+}
+
+.dx-root .dx-stepper-item--active .dx-stepper-badge::before {
+  background: rgba(var(--dx-primary-rgb), 0.1);
+  animation: dx-pulse 2s infinite;
 }
 
 .dx-root .dx-stepper-item--done .dx-stepper-badge {
   border-color: var(--dx-success);
-  background:   var(--dx-success);
+  background:   linear-gradient(135deg, var(--dx-success) 0%, #15803d 100%);
   color:        #fff;
+  box-shadow:   0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.dx-root .dx-stepper-badge svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* ── Label ── */
 .dx-root .dx-stepper-label {
-  font-size:     0.75rem;
+  font-size:     0.875rem;
   font-weight:   500;
   color:         var(--dx-muted);
   white-space:   nowrap;
   overflow:      hidden;
   text-overflow: ellipsis;
-  margin-left:   0.5rem;
-  transition:    color 0.2s;
+  margin-top:    0.75rem;
+  transition:    all 0.3s ease;
+  text-align:    center;
+  max-width:     120px;
 }
 
 .dx-root .dx-stepper-item--active .dx-stepper-label {
-  color:       var(--dx-text);
-  font-weight: 600;
+  color:       var(--dx-primary);
+  font-weight: 700;
+  font-size:   0.9375rem;
 }
 
 .dx-root .dx-stepper-item--done .dx-stepper-label {
   color: var(--dx-text-secondary);
+  font-weight: 600;
 }
 
 /* ── Connector line between items ── */
 .dx-root .dx-stepper-connector {
-  display:    block;
-  flex:       1;
-  height:     2px;
+  position:   absolute;
+  top:        24px;
+  left:       calc(50% + 24px);
+  right:      calc(-50% + 24px);
+  height:     3px;
   background: var(--dx-border);
-  margin:     0 0.4rem;
-  border-radius: 1px;
-  transition: background 0.25s;
+  border-radius: 2px;
+  transition: all 0.4s ease;
+  z-index:    0;
 }
 
 .dx-root .dx-stepper-item--done .dx-stepper-connector {
-  background: var(--dx-success);
+  background: linear-gradient(90deg, var(--dx-success) 0%, var(--dx-success) 100%);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);
 }
 
-/* ── Responsive: hide labels on small screens ── */
-@media (max-width: 480px) {
+.dx-root .dx-stepper-item--active .dx-stepper-connector {
+  background: linear-gradient(90deg, var(--dx-success) 0%, var(--dx-border) 100%);
+}
+
+/* ── Responsive: stack vertically on small screens ── */
+@media (max-width: 768px) {
+  .dx-root .dx-stepper {
+    padding: 1rem;
+  }
+  
+  .dx-root .dx-stepper-badge {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+  }
+  
   .dx-root .dx-stepper-label {
+    font-size: 0.75rem;
+    max-width: 100px;
+  }
+  
+  .dx-root .dx-stepper-connector {
+    top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dx-root .dx-stepper-list {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .dx-root .dx-stepper-item {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .dx-root .dx-stepper-label {
+    margin-top: 0;
+    margin-left: 1rem;
+    text-align: left;
+    max-width: none;
+  }
+  
+  .dx-root .dx-stepper-connector {
     display: none;
   }
-  .dx-root .dx-stepper-connector {
-    margin: 0 0.25rem;
+  
+  .dx-root .dx-stepper-item::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 48px;
+    bottom: -24px;
+    width: 3px;
+    background: var(--dx-border);
+    border-radius: 2px;
+  }
+  
+  .dx-root .dx-stepper-item:last-child::after {
+    display: none;
+  }
+  
+  .dx-root .dx-stepper-item--done::after {
+    background: var(--dx-success);
   }
 }
 
@@ -435,6 +684,55 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes dx-pulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes dx-slide-in {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes dx-bounce-in {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.3); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.05); 
+  }
+  70% { 
+    transform: scale(0.9); 
+  }
+  100% { 
+    transform: scale(1); 
+  }
+}
+
 .dx-root .dx-card {
   animation: dx-fade-in 0.22s ease both;
 }
+
+.dx-root .dx-stepper-item {
+  animation: dx-slide-in 0.4s ease both;
+}
+
+.dx-root .dx-stepper-item:nth-child(1) { animation-delay: 0.05s; }
+.dx-root .dx-stepper-item:nth-child(2) { animation-delay: 0.1s; }
+.dx-root .dx-stepper-item:nth-child(3) { animation-delay: 0.15s; }
+.dx-root .dx-stepper-item:nth-child(4) { animation-delay: 0.2s; }
+.dx-root .dx-stepper-item:nth-child(5) { animation-delay: 0.25s; }
